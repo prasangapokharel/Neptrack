@@ -1,4 +1,5 @@
 <?php
+
 class AuthController {
   private $database;
   private $db;

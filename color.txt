@@ -1,0 +1,4 @@
+btn--- background: #4e4af2;
+background: -webkit-linear-gradient(0deg, #4e4af2 0%, #34c8e8 100%);
+background: linear-gradient(0deg, #4e4af2 0%, #34c8e8 100%);
+

@@ -28,8 +28,8 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
     
     body {
-      background-color: #1f2125;
-      color: #ffffff;
+      background-color: #Fff;
+      color: #000;
       font-family: 'Inter', sans-serif;
       font-weight: 300;
       min-height: 100vh;
@@ -43,25 +43,13 @@
     }
     
     .glass-dark {
-      background-color: #1f2125;
+      background-color: #000;
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    input, select, textarea {
-      background-color: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      color: white !important;
-    }
-    
-    input::placeholder, select::placeholder, textarea::placeholder {
-      color: rgba(255, 255, 255, 0.5) !important;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(255, 255, 255, 0.5) !important;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
-    }
+   
+  
   </style>
 </head>
 <body>

@@ -1,4 +1,5 @@
 <?php 
+
 include BASE_PATH . '/views/templates/header.php';
 
 // Check if user is logged in

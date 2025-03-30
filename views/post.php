@@ -8,118 +8,458 @@ if(!isset($_SESSION['user_id'])) {
 }
 ?>
 
-<div class="max-w-md mx-auto pb-20">
-  <div class="glass rounded-2xl shadow-lg overflow-hidden mb-6">
-    <div class="p-6">
-      <div class="flex items-start space-x-3 mb-3">
-        <a href="/profile/<?php echo $post['user_id']; ?>">
-          <?php if($post['profile_image']): ?>
-            <img src="<?php echo $post['profile_image']; ?>" alt="<?php echo $post['username']; ?>" class="w-10 h-10 rounded-full object-cover">
-          <?php else: ?>
-            <div class="w-10 h-10 rounded-full glass-dark flex items-center justify-center text-white font-medium">
+<style>
+:root {
+  --primary: #3B82F6;    /* Vibrant blue */
+  --dark: #1E293B;       /* Dark slate */
+  --light: #F1F5F9;      /* Light gray */
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--light);
+  color: var(--dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  min-height: 100vh;
+  background-color: white;
+}
+
+.header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.content-wrapper {
+  padding: 0 20px 20px;
+}
+
+.card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.card-title-icon {
+  margin-right: 8px;
+  color: var(--primary);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.post-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--light);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.post-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.post-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-user {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.post-date {
+  font-size: 12px;
+  color: var(--dark);
+  opacity: 0.6;
+}
+
+.post-content {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-stats {
+  display: flex;
+  gap: 15px;
+}
+
+.post-stat {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--dark);
+  opacity: 0.7;
+}
+
+.post-stat-icon {
+  margin-right: 4px;
+}
+
+.post-stat-icon.liked {
+  color: #ef4444;
+  fill: #ef4444;
+}
+
+.post-view {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.post-view:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--light);
+  color: var(--dark);
+}
+
+.btn-outline:hover {
+  background-color: var(--light);
+}
+
+.btn-danger {
+  color: #ef4444;
+}
+
+.btn-danger:hover {
+  color: #dc2626;
+}
+
+.btn-icon {
+  margin-right: 6px;
+}
+
+.comment-form {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--light);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  resize: none;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.comment-list {
+  margin-top: 20px;
+}
+
+.comment-item {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-content {
+  flex: 1;
+  background-color: var(--light);
+  border-radius: 12px;
+  padding: 10px 12px;
+  position: relative;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.comment-user {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.comment-text {
+  font-size: 14px;
+}
+
+.comment-date {
+  font-size: 11px;
+  color: var(--dark);
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--dark);
+  opacity: 0.7;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #ef4444;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+</style>
+
+<div class="container">
+  <header class="header">
+    <h1 class="page-title">Post</h1>
+    <a href="/feed">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+    </a>
+  </header>
+
+  <div class="content-wrapper">
+    <!-- Post Card -->
+    <div class="card">
+      <div class="post-item">
+        <div class="post-header">
+          <a href="/profile/<?php echo $post['user_id']; ?>" class="post-avatar">
+            <?php if($post['profile_image']): ?>
+              <img src="<?php echo $post['profile_image']; ?>" alt="<?php echo $post['username']; ?>">
+            <?php else: ?>
               <?php echo strtoupper(substr($post['username'], 0, 1)); ?>
-            </div>
-          <?php endif; ?>
-        </a>
-        <div>
-          <a href="/profile/<?php echo $post['user_id']; ?>" class="font-medium text-white hover:text-white/80 transition duration-200"><?php echo $post['username']; ?></a>
-          <div class="text-xs text-white/70 font-light"><?php echo date('M d, Y \a\t h:i A', strtotime($post['created_at'])); ?></div>
-        </div>
-      </div>
-      
-      <div class="mb-4">
-        <p class="text-white font-light"><?php echo nl2br($post['content']); ?></p>
-      </div>
-      
-      <?php if($post['image']): ?>
-        <div class="mb-4">
-          <img src="<?php echo $post['image']; ?>" alt="Post image" class="rounded-xl w-full h-auto">
-        </div>
-      <?php endif; ?>
-      
-      <div class="flex items-center justify-between text-sm">
-        <div class="flex items-center space-x-4">
-          <button id="like-button" class="flex items-center <?php echo $post['is_liked'] ? 'text-white' : 'text-white/70 hover:text-white'; ?> transition duration-200" data-post-id="<?php echo $post['id']; ?>" data-liked="<?php echo $post['is_liked'] ? 'true' : 'false'; ?>">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="<?php echo $post['is_liked'] ? 'currentColor' : 'none'; ?>" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            <span id="like-count"><?php echo $post['like_count']; ?></span>
-          </button>
-          
-          <div class="flex items-center text-white/70">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <span id="comment-count"><?php echo count($comments); ?></span>
+            <?php endif; ?>
+          </a>
+          <div>
+            <a href="/profile/<?php echo $post['user_id']; ?>" class="post-user"><?php echo $post['username']; ?></a>
+            <div class="post-date"><?php echo date('M d, Y \a\t h:i A', strtotime($post['created_at'])); ?></div>
           </div>
         </div>
         
-        <?php if($post['user_id'] == $_SESSION['user_id']): ?>
-          <button id="delete-post" class="text-red-300 hover:text-red-200 transition duration-200" data-post-id="<?php echo $post['id']; ?>">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-          </button>
+        <div class="post-content">
+          <p><?php echo nl2br($post['content']); ?></p>
+        </div>
+        
+        <?php if($post['image']): ?>
+          <img src="<?php echo $post['image']; ?>" alt="Post image" class="post-image">
         <?php endif; ?>
+        
+        <div class="post-actions">
+          <div class="post-stats">
+            <button id="like-button" class="post-stat" data-post-id="<?php echo $post['id']; ?>" data-liked="<?php echo $post['is_liked'] ? 'true' : 'false'; ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="<?php echo $post['is_liked'] ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="post-stat-icon <?php echo $post['is_liked'] ? 'liked' : ''; ?>">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span id="like-count"><?php echo $post['like_count']; ?></span>
+            </button>
+            
+            <div class="post-stat">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="post-stat-icon">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span id="comment-count"><?php echo count($comments); ?></span>
+            </div>
+          </div>
+          
+          <?php if($post['user_id'] == $_SESSION['user_id']): ?>
+            <button id="delete-post" class="btn-danger" data-post-id="<?php echo $post['id']; ?>">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Comments Section -->
-  <div class="glass rounded-2xl shadow-lg overflow-hidden mb-6">
-    <div class="px-4 py-3 border-b border-white/10">
-      <h3 class="text-lg font-medium text-white">Comments</h3>
-    </div>
     
-    <div class="p-6">
-      <form id="comment-form" class="mb-6">
-        <input type="hidden" id="post-id" value="<?php echo $post['id']; ?>">
-        <div class="mb-3">
-          <textarea id="comment-content" placeholder="Write a comment..." class="w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-transparent transition duration-200 resize-none" rows="2"></textarea>
-        </div>
-        <div class="flex justify-end">
-          <button type="submit" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl transition duration-200">
-            Post Comment
-          </button>
-        </div>
-      </form>
+    <!-- Comments Card -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-title-icon">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Comments
+        </h2>
+      </div>
       
-      <div id="comments-container" class="space-y-4">
-        <?php if(empty($comments)): ?>
-          <div id="no-comments" class="text-center text-white/70 py-4 font-light">
-            No comments yet. Be the first to comment!
+      <div class="card-body">
+        <form id="comment-form" class="comment-form">
+          <input type="hidden" id="post-id" value="<?php echo $post['id']; ?>">
+          <div class="form-group">
+            <textarea id="comment-content" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
           </div>
-        <?php else: ?>
-          <?php foreach($comments as $comment): ?>
-            <div class="comment-item flex space-x-3" data-comment-id="<?php echo $comment['id']; ?>">
-              <a href="/profile/<?php echo $comment['user_id']; ?>">
-                <?php if($comment['profile_image']): ?>
-                  <img src="<?php echo $comment['profile_image']; ?>" alt="<?php echo $comment['username']; ?>" class="w-8 h-8 rounded-full object-cover">
-                <?php else: ?>
-                  <div class="w-8 h-8 rounded-full glass-dark flex items-center justify-center text-white font-medium text-sm">
-                    <?php echo strtoupper(substr($comment['username'], 0, 1)); ?>
-                  </div>
-                <?php endif; ?>
-              </a>
-              <div class="flex-1">
-                <div class="glass-dark rounded-xl p-3">
-                  <div class="flex justify-between items-start">
-                    <a href="/profile/<?php echo $comment['user_id']; ?>" class="font-medium text-white hover:text-white/80 transition duration-200"><?php echo $comment['username']; ?></a>
-                    <?php if($comment['user_id'] == $_SESSION['user_id']): ?>
-                      <button class="delete-comment text-red-300 hover:text-red-200 transition duration-200" data-comment-id="<?php echo $comment['id']; ?>">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                      </button>
-                    <?php endif; ?>
-                  </div>
-                  <p class="text-white text-sm font-light mt-1"><?php echo nl2br($comment['content']); ?></p>
-                </div>
-                <div class="text-xs text-white/70 font-light mt-1 ml-2"><?php echo date('M d, Y \a\t h:i A', strtotime($comment['created_at'])); ?></div>
-              </div>
+          <div style="text-align: right;">
+            <button type="submit" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Post Comment
+            </button>
+          </div>
+        </form>
+        
+        <div id="comments-container" class="comment-list">
+          <?php if(empty($comments)): ?>
+            <div id="no-comments" class="empty-state">
+              <p>No comments yet. Be the first to comment!</p>
             </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
+          <?php else: ?>
+            <?php foreach($comments as $comment): ?>
+              <div class="comment-item" data-comment-id="<?php echo $comment['id']; ?>">
+                <a href="/profile/<?php echo $comment['user_id']; ?>" class="comment-avatar">
+                  <?php if($comment['profile_image']): ?>
+                    <img src="<?php echo $comment['profile_image']; ?>" alt="<?php echo $comment['username']; ?>">
+                  <?php else: ?>
+                    <?php echo strtoupper(substr($comment['username'], 0, 1)); ?>
+                  <?php endif; ?>
+                </a>
+                <div>
+                  <div class="comment-content">
+                    <div class="comment-header">
+                      <a href="/profile/<?php echo $comment['user_id']; ?>" class="comment-user"><?php echo $comment['username']; ?></a>
+                      <?php if($comment['user_id'] == $_SESSION['user_id']): ?>
+                        <button class="delete-comment delete-btn" data-comment-id="<?php echo $comment['id']; ?>">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      <?php endif; ?>
+                    </div>
+                    <div class="comment-text"><?php echo nl2br($comment['content']); ?></div>
+                  </div>
+                  <div class="comment-date"><?php echo date('M d, Y \a\t h:i A', strtotime($comment['created_at'])); ?></div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
   </div>
@@ -154,14 +494,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Toggle liked state
         if(isLiked) {
           this.setAttribute('data-liked', 'false');
-          this.classList.remove('text-white');
-          this.classList.add('text-white/70', 'hover:text-white');
           likeIcon.setAttribute('fill', 'none');
+          likeIcon.classList.remove('liked');
         } else {
           this.setAttribute('data-liked', 'true');
-          this.classList.remove('text-white/70', 'hover:text-white');
-          this.classList.add('text-white');
           likeIcon.setAttribute('fill', 'currentColor');
+          likeIcon.classList.add('liked');
         }
       } else {
         alert(data.message);
@@ -241,27 +579,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create new comment HTML
         const comment = data.comment;
         const profileImage = comment.profile_image ? 
-          `<img src="${comment.profile_image}" alt="${comment.username}" class="w-8 h-8 rounded-full object-cover">` : 
-          `<div class="w-8 h-8 rounded-full glass-dark flex items-center justify-center text-white font-medium text-sm">${comment.username.charAt(0).toUpperCase()}</div>`;
+          `<img src="${comment.profile_image}" alt="${comment.username}">` : 
+          `${comment.username.charAt(0).toUpperCase()}`;
         
         const commentHTML = `
-        <div class="comment-item flex space-x-3" data-comment-id="${comment.id}">
-          <a href="/profile/${comment.user_id}">
+        <div class="comment-item" data-comment-id="${comment.id}">
+          <a href="/profile/${comment.user_id}" class="comment-avatar">
             ${profileImage}
           </a>
-          <div class="flex-1">
-            <div class="glass-dark rounded-xl p-3">
-              <div class="flex justify-between items-start">
-                <a href="/profile/${comment.user_id}" class="font-medium text-white hover:text-white/80 transition duration-200">${comment.username}</a>
-                <button class="delete-comment text-red-300 hover:text-red-200 transition duration-200" data-comment-id="${comment.id}">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          <div>
+            <div class="comment-content">
+              <div class="comment-header">
+                <a href="/profile/${comment.user_id}" class="comment-user">${comment.username}</a>
+                <button class="delete-comment delete-btn" data-comment-id="${comment.id}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
                   </svg>
                 </button>
               </div>
-              <p class="text-white text-sm font-light mt-1">${comment.content.replace(/\n/g, '<br>')}</p>
+              <div class="comment-text">${comment.content.replace(/\n/g, '<br>')}</div>
             </div>
-            <div class="text-xs text-white/70 font-light mt-1 ml-2">Just now</div>
+            <div class="comment-date">Just now</div>
           </div>
         </div>
         `;
@@ -319,8 +659,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no comments left, show empty state
         if(commentsContainer.children.length === 0) {
           commentsContainer.innerHTML = `
-          <div id="no-comments" class="text-center text-white/70 py-4 font-light">
-            No comments yet. Be the first to comment!
+          <div id="no-comments" class="empty-state">
+            <p>No comments yet. Be the first to comment!</p>
           </div>
           `;
         }
@@ -336,4 +676,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php include BASE_PATH . '/views/templates/footer.php'; ?>
-

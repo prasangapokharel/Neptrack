@@ -9,7 +9,7 @@ define('BASE_PATH', __DIR__);
 require_once BASE_PATH . '/config/database.php';
 require_once BASE_PATH . '/config/http_client.php';
 
-// Include models
+// Include models - using require_once to prevent duplicate class declarations
 require_once BASE_PATH . '/models/User.php';
 require_once BASE_PATH . '/models/Goal.php';
 require_once BASE_PATH . '/models/Food.php';
@@ -17,8 +17,12 @@ require_once BASE_PATH . '/models/Follow.php';
 require_once BASE_PATH . '/models/Post.php';
 require_once BASE_PATH . '/models/Like.php';
 require_once BASE_PATH . '/models/Comment.php';
+// Add new models for workout functionality
+require_once BASE_PATH . '/models/Admin.php';
+require_once BASE_PATH . '/models/Workout.php';
+require_once BASE_PATH . '/models/WorkoutPlan.php';
 
-// Include controllers
+// Include controllers - using require_once to prevent duplicate class declarations
 require_once BASE_PATH . '/controllers/AuthController.php';
 require_once BASE_PATH . '/controllers/GoalController.php';
 require_once BASE_PATH . '/controllers/FoodController.php';
@@ -27,6 +31,12 @@ require_once BASE_PATH . '/controllers/FollowController.php';
 require_once BASE_PATH . '/controllers/PostController.php';
 require_once BASE_PATH . '/controllers/LikeController.php';
 require_once BASE_PATH . '/controllers/CommentController.php';
+// Add new controllers for workout functionality
+require_once BASE_PATH . '/controllers/AdminController.php';
+require_once BASE_PATH . '/controllers/WorkoutController.php';
+
+require_once 'controllers/WorkoutPlanController.php';
+
 
 // Get the request URI
 $request_uri = $_SERVER['REQUEST_URI'];
@@ -54,6 +64,8 @@ $routes = [
   
   // Profile routes
   '/profile' => ['controller' => 'ProfileController', 'action' => 'showProfile'],
+  '/profile/monthly' => ['controller' => 'ProfileController', 'action' => 'showMonthlyView'],
+  '/profile/yearly' => ['controller' => 'ProfileController', 'action' => 'showYearlyView'],
   '/edit-profile' => ['controller' => 'ProfileController', 'action' => 'updateProfile'],
   '/users' => ['controller' => 'ProfileController', 'action' => 'showUsers'],
   '/followers' => ['controller' => 'ProfileController', 'action' => 'showFollowers'],
@@ -61,6 +73,18 @@ $routes = [
   
   // Social features
   '/feed' => ['controller' => 'PostController', 'action' => 'showFeed'],
+  
+  // Admin routes
+  '/admin' => ['controller' => 'AdminController', 'action' => 'showLogin'],
+  '/admin/login' => ['controller' => 'AdminController', 'action' => 'showLogin'],
+  '/admin/register' => ['controller' => 'AdminController', 'action' => 'showRegister'],
+  '/admin/dashboard' => ['controller' => 'AdminController', 'action' => 'showDashboard'],
+  '/admin/add-workout' => ['controller' => 'AdminController', 'action' => 'showAddWorkout'],
+  
+  // Workout routes
+  '/workouts' => ['controller' => 'WorkoutController', 'action' => 'showWorkouts'],
+  '/workout-plans' => ['controller' => 'WorkoutPlanController', 'action' => 'showWorkoutPlans'],
+  '/workout-plans/create' => ['controller' => 'WorkoutPlanController', 'action' => 'showCreateWorkoutPlan'],
   
   // API endpoints
   '/api/auth/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -77,6 +101,20 @@ $routes = [
   '/api/comment/create' => ['controller' => 'CommentController', 'action' => 'createComment'],
   '/api/comment/delete' => ['controller' => 'CommentController', 'action' => 'deleteComment'],
   '/api/comment/get' => ['controller' => 'CommentController', 'action' => 'getComments'],
+  
+  // Admin API endpoints
+  '/api/admin/login' => ['controller' => 'AdminController', 'action' => 'login'],
+  '/api/admin/register' => ['controller' => 'AdminController', 'action' => 'register'],
+  '/api/admin/add-workout' => ['controller' => 'AdminController', 'action' => 'addWorkout'],
+  
+  // Workout API endpoints
+  '/api/workout-plan/create' => ['controller' => 'WorkoutPlanController', 'action' => 'createWorkoutPlan'],
+  '/api/workout-plan/add-exercise' => ['controller' => 'WorkoutPlanController', 'action' => 'addExerciseToWorkoutPlan'],
+  '/api/workout-plan/remove-exercise' => ['controller' => 'WorkoutPlanController', 'action' => 'removeExerciseFromWorkoutPlan'],
+  '/api/workout-plan/log' => ['controller' => 'WorkoutPlanController', 'action' => 'logWorkout'],
+  '/api/workout-plan/like' => ['controller' => 'WorkoutPlanController', 'action' => 'toggleLike'],
+  '/api/workout-plan/exercises' => ['controller' => 'WorkoutPlanController', 'action' => 'getExercises'],
+  '/api/workout-plan/clone' => ['controller' => 'WorkoutPlanController', 'action' => 'cloneWorkoutPlan'],
 ];
 
 // Check for dynamic routes
@@ -108,6 +146,14 @@ if (preg_match('#^/post/(\d+)$#', $request_uri, $matches)) {
   exit;
 }
 
+// Add dynamic route for workout plan editing
+if (preg_match('#^/workout-plans/edit/(\d+)$#', $request_uri, $matches)) {
+  $plan_id = $matches[1];
+  $controller = new WorkoutPlanController();
+  $controller->showEditWorkoutPlan($plan_id);
+  exit;
+}
+
 // Check if route exists
 if (isset($routes[$request_uri])) {
   $route = $routes[$request_uri];
@@ -125,4 +171,3 @@ if (isset($routes[$request_uri])) {
   echo '404 Not Found';
 }
 ?>
-

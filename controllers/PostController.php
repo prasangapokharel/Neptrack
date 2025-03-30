@@ -153,8 +153,12 @@ class PostController {
             exit;
         }
         
-        // Check if post is liked by current user
+        // Get like count
         $like = new Like($this->db);
+        $like->post_id = $post_id;
+        $post['like_count'] = $like->getLikeCount();
+
+        // Check if post is liked by current user
         $like->user_id = $_SESSION['user_id'];
         $like->post_id = $post_id;
         $post['is_liked'] = $like->isLiked();

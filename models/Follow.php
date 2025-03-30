@@ -1,4 +1,5 @@
 <?php
+
 class Follow {
     private $conn;
     public $id;
